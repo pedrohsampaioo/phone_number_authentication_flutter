@@ -33,6 +33,8 @@ class AuthService {
         AuthFailure failure;
         if (exception.code == "quotaExceeded") {
           failure = AuthFailure.manyRequests();
+        } else {
+          failure = AuthFailure.serverError();
         }
         failureHappened(optionOf(failure));
       },

@@ -30,7 +30,6 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Sign in page"),
         backgroundColor: Colors.red,
@@ -103,6 +102,19 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               const SizedBox(height: 32),
+              RaisedButton(
+                child: Text(
+                  "try to resend code",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  _phoneNumberAuthBloc.add(
+                    PhoneNumberAuthEvent.sendCodePressed(widget.phoneNumber),
+                  );
+                },
+                color: Colors.red,
+              ),
+              const SizedBox(height: 32),
               BlocConsumer<PhoneNumberAuthBloc, PhoneNumberAuthState>(
                 bloc: _phoneNumberAuthBloc,
                 listener: (context, state) {
@@ -117,7 +129,8 @@ class _SignInPageState extends State<SignInPage> {
                     loadedWithFailure: (event) {
                       String message;
                       message = event.failure.map<String>(
-                        serverError: (failure) => "Server error",
+                        serverError: (failure) =>
+                            "Authentication error, try later!",
                         wrongSentCode: (failure) => "Wrong sent code",
                         manyRequests: (failure) =>
                             "you made too many requests, try later!",
@@ -130,7 +143,7 @@ class _SignInPageState extends State<SignInPage> {
                           return "You missed the code several times, wait for a new one!";
                         },
                       );
-                      _scaffoldKey.currentState.showSnackBar(
+                      Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             message,
@@ -145,7 +158,7 @@ class _SignInPageState extends State<SignInPage> {
                       );
                     },
                     loadedWithSucess: (event) async {
-                      _scaffoldKey.currentState.showSnackBar(
+                      Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             "Sucess!",

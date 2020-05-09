@@ -28,6 +28,9 @@ class PhoneNumberAuthBloc
     yield* event.map(
       sendCodePressed: (data) async* {
         final phoneNumber = data.phoneNumber;
+        if (!(state is Initial)) {
+          yield Loading();
+        }
         await _authService.tryAutomaticSignIn(
           phoneNumber: phoneNumber,
           getVerificationId: _updateVerificationId,
