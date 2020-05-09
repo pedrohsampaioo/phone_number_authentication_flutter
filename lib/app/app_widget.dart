@@ -11,6 +11,7 @@ class AppWidget extends StatelessWidget {
       title: "Phone number Auth",
       theme: ThemeData(
         primaryColor: Colors.red,
+        accentColor: Colors.red,
       ),
     );
   }

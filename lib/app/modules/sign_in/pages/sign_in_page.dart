@@ -17,7 +17,6 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final _phoneNumberAuthBloc = Modular.get<PhoneNumberAuthBloc>();
-  bool _isSubmitting = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -41,130 +40,136 @@ class _SignInPageState extends State<SignInPage> {
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           padding: const EdgeInsets.all(32),
-          child: BlocListener<PhoneNumberAuthBloc, PhoneNumberAuthState>(
-            bloc: _phoneNumberAuthBloc,
-            listener: (context, state) {
-              _isSubmitting = false;
-              state.map(
-                initial: (event) {
-                  _phoneNumberAuthBloc.add(
-                    PhoneNumberAuthEvent.sendCodePressed(widget.phoneNumber),
-                  );
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Message sent to the number ${widget.phoneNumber}",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 32),
+              TextField(
+                maxLength: 6,
+                maxLengthEnforced: true,
+                cursorColor: Colors.red,
+                onSubmitted: (value) {
+                  if (value.length == 6) {
+                    _phoneNumberAuthBloc.add(
+                      PhoneNumberAuthEvent.checkSentCodePressed(value),
+                    );
+                  }
                 },
-                loading: (event) {
-                  _isSubmitting = true;
-                },
-                loadedWithFailure: (event) {
-                  String message;
-                  message = event.failure.map<String>(
-                    serverError: (failure) => "Server error",
-                    wrongSentCode: (failure) => "Wrong sent code",
-                    manyRequests: (failure) =>
-                        "you made too many requests, try later!",
-                    sessionExpired: (failure) {
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: "Code Sent",
+                  hintStyle: TextStyle(
+                    color: Colors.black45,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    borderSide: BorderSide(
+                      color: Colors.red,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              BlocConsumer<PhoneNumberAuthBloc, PhoneNumberAuthState>(
+                bloc: _phoneNumberAuthBloc,
+                listener: (context, state) {
+                  state.map(
+                    initial: (event) {
                       _phoneNumberAuthBloc.add(
                         PhoneNumberAuthEvent.sendCodePressed(
-                          widget.phoneNumber,
+                            widget.phoneNumber),
+                      );
+                    },
+                    loading: (event) {},
+                    loadedWithFailure: (event) {
+                      String message;
+                      message = event.failure.map<String>(
+                        serverError: (failure) => "Server error",
+                        wrongSentCode: (failure) => "Wrong sent code",
+                        manyRequests: (failure) =>
+                            "you made too many requests, try later!",
+                        sessionExpired: (failure) {
+                          _phoneNumberAuthBloc.add(
+                            PhoneNumberAuthEvent.sendCodePressed(
+                              widget.phoneNumber,
+                            ),
+                          );
+                          return "You missed the code several times, wait for a new one!";
+                        },
+                      );
+                      _scaffoldKey.currentState.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            message,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          backgroundColor: Colors.red,
                         ),
                       );
-                      return "You missed the code several times, wait for a new one!";
+                    },
+                    loadedWithSucess: (event) async {
+                      _scaffoldKey.currentState.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Sucess!",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                      await Future.delayed(const Duration(seconds: 2));
+                      Modular.to.pushReplacementNamed("/sucess");
                     },
                   );
-                  _scaffoldKey.currentState.showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        message,
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
                 },
-                loadedWithSucess: (event) async {
-                  _scaffoldKey.currentState.showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        "Sucess!!!",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                  await Future.delayed(const Duration(seconds: 2));
-                  Modular.to.pushReplacementNamed("/sucess");
+                builder: (context, state) {
+                  return state is Loading
+                      ? CircularProgressIndicator()
+                      : Container();
                 },
-              );
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "Message sent to the number ${widget.phoneNumber}",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                TextField(
-                  maxLength: 6,
-                  maxLengthEnforced: true,
-                  cursorColor: Colors.red,
-                  onSubmitted: (value) {
-                    if (value.length == 6) {
-                      _phoneNumberAuthBloc.add(
-                        PhoneNumberAuthEvent.checkSentCodePressed(value),
-                      );
-                    }
-                  },
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    hintText: "Code Sent",
-                    hintStyle: TextStyle(
-                      color: Colors.black45,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                      borderSide: BorderSide(
-                        color: Colors.red,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                _isSubmitting ? CircularProgressIndicator() : Container(),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
