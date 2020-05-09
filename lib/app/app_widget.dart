@@ -9,6 +9,9 @@ class AppWidget extends StatelessWidget {
       onGenerateRoute: Modular.generateRoute,
       navigatorKey: Modular.navigatorKey,
       title: "Phone number Auth",
+      theme: ThemeData(
+        primaryColor: Colors.red,
+      ),
     );
   }
 }
