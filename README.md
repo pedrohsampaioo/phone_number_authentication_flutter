@@ -16,10 +16,14 @@ Connect with me at [LinkedIn](https://www.linkedin.com/in/pedro-henrique-da-silv
    <br>
      
     - <strong> quotaExceeded </strong> : indicate that the user made more requests than allowed, our system returns <strong> manyRequests() </strong> in the application.
-   <br> - <strong> ERROR_SESSION_EXPIRED </strong> : indicate that the user has erred the code sent several times, our system returns <strong> sessionExpired() </strong> in the application.
-   <br> - <strong> ERROR_INVALID_VERIFICATION_CODE </strong> : indicate that the user has erred the code sent, our system returns <strong> wrongSentCode() </strong> in the application.
-   <br> - <strong> Any other error </strong> : indicate that the user made more requests than allowed, our system returns <strong> serverError() </strong> in the application.
-   <br> - <strong> To identify more errors <a href="https://github.com/firebase/FirebaseUI-Android/blob/master/auth/src/main/java/com/firebase/ui/auth/util/FirebaseAuthError.java">access</a> </strong>.
+   <br>
+   - <strong> ERROR_SESSION_EXPIRED </strong> : indicate that the user has erred the code sent several times, our system returns <strong> sessionExpired() </strong> in the application.
+   <br>
+   - <strong> ERROR_INVALID_VERIFICATION_CODE </strong> : indicate that the user has erred the code sent, our system returns <strong> wrongSentCode() </strong> in the application.
+   <br>
+   - <strong> Any other error </strong> : indicate that the user made more requests than allowed, our system returns <strong> serverError() </strong> in the application.
+   <br>
+   - <strong> To identify more errors <a href="https://github.com/firebase/FirebaseUI-Android/blob/master/auth/src/main/java/com/firebase/ui/auth/util/FirebaseAuthError.java">access</a> </strong>.
    <br>
 
 ## Getting Started
